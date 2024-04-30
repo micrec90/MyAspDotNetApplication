@@ -1,4 +1,5 @@
-﻿using MyRESTfulWebAPI.Models;
+﻿using MyRESTfulWebAPI.DTOs.ForumPostDTOs;
+using MyRESTfulWebAPI.Models;
 
 namespace MyRESTfulWebAPI.DTOs.UserDTOs
 {
@@ -8,5 +9,6 @@ namespace MyRESTfulWebAPI.DTOs.UserDTOs
         public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public DateTime RegisteredOn { get; set; } = DateTime.Now;
+        public List<ForumPostGetDTO> ForumPosts { get; set; } = new List<ForumPostGetDTO>();
     }
 }

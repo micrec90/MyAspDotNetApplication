@@ -12,7 +12,8 @@ namespace MyRESTfulWebAPI.Mappers
                 Id = user.Id,
                 Username = user.Username,
                 Email = user.Email,
-                RegisteredOn = user.RegisteredOn
+                RegisteredOn = user.RegisteredOn,
+                ForumPosts = user.ForumPosts.Select(x => x.ToForumPostGetDTO()).ToList()
             };
         }
         public static User ToUserFromPostDTO(this UserPostDTO userPostDTO)

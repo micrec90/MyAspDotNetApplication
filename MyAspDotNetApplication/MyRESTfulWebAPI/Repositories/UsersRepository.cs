@@ -17,11 +17,11 @@ namespace MyRESTfulWebAPI.Repositories
         }
         public async Task<List<User>> GetAllAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.Include(c => c.ForumPosts).ToListAsync();
         }
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users.Include(c => c.ForumPosts).FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<User> PostAsync(User user)
         {
