@@ -15,5 +15,14 @@ namespace MyRESTfulWebAPI.Mappers
                 RegisteredOn = user.RegisteredOn
             };
         }
+        public static User ToUserFromPostDTO(this UserPostDTO userPostDTO)
+        {
+            return new User
+            {
+                Username = userPostDTO.Username,
+                Email = userPostDTO.Email,
+                Password = userPostDTO.Password
+            };
+        }
     }
 }
