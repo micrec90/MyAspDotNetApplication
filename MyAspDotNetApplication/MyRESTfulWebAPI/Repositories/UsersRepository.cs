@@ -58,5 +58,10 @@ namespace MyRESTfulWebAPI.Repositories
 
             return user;
         }
+
+        public async Task<bool> UserExists(int id)
+        {
+            return await _context.Users.AnyAsync(e => e.Id == id);
+        }
     }
 }

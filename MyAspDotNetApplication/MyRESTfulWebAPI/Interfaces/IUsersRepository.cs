@@ -10,6 +10,7 @@ namespace MyRESTfulWebAPI.Interfaces
         Task<User> PostAsync(User user);
         Task<User?> PutAsync(int id, UserPutDTO userDTO);
         Task<User?> DeleteAsync(int id);
+        Task<bool> UserExists(int id);
 
     }
 }

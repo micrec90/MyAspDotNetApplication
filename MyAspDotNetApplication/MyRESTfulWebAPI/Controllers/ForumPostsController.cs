@@ -19,11 +19,13 @@ namespace MyRESTfulWebAPI.Controllers
     public class ForumPostsController : ControllerBase
     {
         private readonly IForumPostsRepository _forumPostsRepository;
+        private readonly IUsersRepository _userRepository;
         private readonly ApplicationDBContext _context;
 
-        public ForumPostsController(ApplicationDBContext context, IForumPostsRepository forumPostsRepository)
+        public ForumPostsController(ApplicationDBContext context, IForumPostsRepository forumPostsRepository, IUsersRepository usersRepository)
         {
             _forumPostsRepository = forumPostsRepository;
+            _userRepository = usersRepository;
             _context = context;
         }
 
@@ -52,57 +54,48 @@ namespace MyRESTfulWebAPI.Controllers
         // PUT: api/ForumPosts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutForumPost(int id, ForumPost forumPost)
+        public async Task<IActionResult> PutForumPost(int id, ForumPostPutDTO forumPostPutDTO)
         {
-            if (id != forumPost.Id)
+            var forumPost = await _forumPostsRepository.PutAsync(id, forumPostPutDTO);
+
+            if (forumPost == null)
+            {
+                return NotFound();
+            }
+
+            if(id !=  forumPost.Id)
             {
                 return BadRequest();
-            }
-
-            _context.Entry(forumPost).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ForumPostExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
             }
 
             return NoContent();
         }
 
-        // POST: api/ForumPosts
+        // POST: api/ForumPosts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<ForumPost>> PostForumPost(ForumPost forumPost)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<ForumPost>> PostForumPost(int userId, ForumPostPostDTO forumPostDTO)
         {
-            _context.ForumPosts.Add(forumPost);
-            await _context.SaveChangesAsync();
+            if (!await _userRepository.UserExists(userId))
+            {
+                return BadRequest();
+            }
 
-            return CreatedAtAction("GetForumPost", new { id = forumPost.Id }, forumPost);
+            var forumPost = forumPostDTO.ToForumPostFromPostDTO(userId);
+            await _forumPostsRepository.PostAsync(forumPost);
+
+            return CreatedAtAction(nameof(GetForumPost), new { id = forumPost.Id }, forumPost.ToForumPostGetDTO());
         }
 
         // DELETE: api/ForumPosts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteForumPost(int id)
         {
-            var forumPost = await _context.ForumPosts.FindAsync(id);
+            var forumPost = await _forumPostsRepository.DeleteAsync(id);
             if (forumPost == null)
             {
                 return NotFound();
             }
-
-            _context.ForumPosts.Remove(forumPost);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

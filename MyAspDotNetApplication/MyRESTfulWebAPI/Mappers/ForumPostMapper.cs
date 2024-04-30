@@ -16,5 +16,14 @@ namespace MyRESTfulWebAPI.Mappers
                 UserId = forumPost.UserId
             };
         }
+        public static ForumPost ToForumPostFromPostDTO(this ForumPostPostDTO forumPostPostDTO, int userId)
+        {
+            return new ForumPost
+            {
+                Title = forumPostPostDTO.Title,
+                Content = forumPostPostDTO.Content,
+                UserId = userId
+            };
+        }
     }
 }
