@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRESTfulWebAPI.Context;
+using MyRESTfulWebAPI.DTOs.UserDTOs;
+using MyRESTfulWebAPI.Mappers;
 using MyRESTfulWebAPI.Models;
 
 namespace MyRESTfulWebAPI.Controllers
@@ -23,14 +25,14 @@ namespace MyRESTfulWebAPI.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserGetDTO>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.Select(x => x.ToUserGetDTO()).ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserGetDTO>> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -39,7 +41,7 @@ namespace MyRESTfulWebAPI.Controllers
                 return NotFound();
             }
 
-            return user;
+            return user.ToUserGetDTO();
         }
 
         // PUT: api/Users/5
