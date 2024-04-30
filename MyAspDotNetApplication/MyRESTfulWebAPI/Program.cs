@@ -1,6 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using MyRESTfulWebAPI.Context;
+using MyRESTfulWebAPI.Interfaces;
+using MyRESTfulWebAPI.Repositories;
 
 namespace MyRESTfulWebAPI
 {
@@ -21,6 +23,8 @@ namespace MyRESTfulWebAPI
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 
             var app = builder.Build();
 

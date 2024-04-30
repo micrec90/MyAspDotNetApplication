@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRESTfulWebAPI.Context;
 using MyRESTfulWebAPI.DTOs.UserDTOs;
+using MyRESTfulWebAPI.Interfaces;
 using MyRESTfulWebAPI.Mappers;
 using MyRESTfulWebAPI.Models;
 
@@ -16,10 +17,12 @@ namespace MyRESTfulWebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly IUsersRepository _userRepository;
         private readonly ApplicationDBContext _context;
 
-        public UsersController(ApplicationDBContext context)
+        public UsersController(ApplicationDBContext context, IUsersRepository userRepository)
         {
+            _userRepository = userRepository;
             _context = context;
         }
 
@@ -27,14 +30,15 @@ namespace MyRESTfulWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserGetDTO>>> GetUsers()
         {
-            return await _context.Users.Select(x => x.ToUserGetDTO()).ToListAsync();
+            var users = await _userRepository.GetAllAsync();
+            return users.Select(x => x.ToUserGetDTO()).ToList();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserGetDTO>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
@@ -49,7 +53,7 @@ namespace MyRESTfulWebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, UserPutDTO userPutDTO)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _userRepository.PutAsync(id, userPutDTO);
 
             if(user == null)
             {
@@ -61,28 +65,6 @@ namespace MyRESTfulWebAPI.Controllers
                 return BadRequest();
             }
 
-            user.Username = userPutDTO.Username;
-            user.Email = userPutDTO.Email;
-            user.Password = userPutDTO.Password;
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
@@ -92,8 +74,7 @@ namespace MyRESTfulWebAPI.Controllers
         public async Task<ActionResult<User>> PostUser(UserPostDTO userPostDTO)
         {
             var user = userPostDTO.ToUserFromPostDTO();
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _userRepository.PostAsync(user);
 
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserGetDTO());
         }
@@ -102,14 +83,11 @@ namespace MyRESTfulWebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userRepository.DeleteAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
