@@ -6,7 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRESTfulWebAPI.Context;
+using MyRESTfulWebAPI.DTOs.ForumPostDTOs;
+using MyRESTfulWebAPI.Interfaces;
+using MyRESTfulWebAPI.Mappers;
 using MyRESTfulWebAPI.Models;
+using MyRESTfulWebAPI.Repositories;
 
 namespace MyRESTfulWebAPI.Controllers
 {
@@ -14,32 +18,35 @@ namespace MyRESTfulWebAPI.Controllers
     [ApiController]
     public class ForumPostsController : ControllerBase
     {
+        private readonly IForumPostsRepository _forumPostsRepository;
         private readonly ApplicationDBContext _context;
 
-        public ForumPostsController(ApplicationDBContext context)
+        public ForumPostsController(ApplicationDBContext context, IForumPostsRepository forumPostsRepository)
         {
+            _forumPostsRepository = forumPostsRepository;
             _context = context;
         }
 
         // GET: api/ForumPosts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ForumPost>>> GetForumPosts()
+        public async Task<ActionResult<IEnumerable<ForumPostGetDTO>>> GetForumPosts()
         {
-            return await _context.ForumPosts.ToListAsync();
+            var forumPosts = await _forumPostsRepository.GetAllAsync();
+            return forumPosts.Select(x => x.ToForumPostGetDTO()).ToList();
         }
 
         // GET: api/ForumPosts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ForumPost>> GetForumPost(int id)
+        public async Task<ActionResult<ForumPostGetDTO>> GetForumPost(int id)
         {
-            var forumPost = await _context.ForumPosts.FindAsync(id);
+            var forumPost = await _forumPostsRepository.GetByIdAsync(id);
 
             if (forumPost == null)
             {
                 return NotFound();
             }
 
-            return forumPost;
+            return forumPost.ToForumPostGetDTO();
         }
 
         // PUT: api/ForumPosts/5

@@ -25,6 +25,7 @@ namespace MyRESTfulWebAPI
             });
 
             builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+            builder.Services.AddScoped<IForumPostsRepository, ForumPostsRepository>();
 
             var app = builder.Build();
 
