@@ -47,12 +47,23 @@ namespace MyRESTfulWebAPI.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserPutDTO userPutDTO)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if(user == null)
+            {
+                return NotFound();
+            }
+
             if (id != user.Id)
             {
                 return BadRequest();
             }
+
+            user.Username = userPutDTO.Username;
+            user.Email = userPutDTO.Email;
+            user.Password = userPutDTO.Password;
 
             _context.Entry(user).State = EntityState.Modified;
 
