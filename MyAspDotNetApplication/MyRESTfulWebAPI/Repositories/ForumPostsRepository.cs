@@ -61,7 +61,9 @@ namespace MyRESTfulWebAPI.Repositories
                 }
             }
 
-            return await forumPosts.ToListAsync();
+            int skip = (queryObject.PageNumber - 1) * queryObject.PageSize;
+
+            return await forumPosts.Skip(skip).Take(queryObject.PageSize).ToListAsync();
         }
 
         public async Task<ForumPost?> GetByIdAsync(int id)

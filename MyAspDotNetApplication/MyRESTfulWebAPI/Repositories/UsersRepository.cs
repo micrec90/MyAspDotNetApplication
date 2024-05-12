@@ -38,8 +38,9 @@ namespace MyRESTfulWebAPI.Repositories
                     users = queryObject.IsDescending ? users.OrderByDescending(x => x.Email) : users.OrderBy(x => x.Email);
                 }
             }
+            int skip = (queryObject.PageNumber - 1) * queryObject.PageSize;
 
-            return await users.ToListAsync();
+            return await users.Skip(skip).Take(queryObject.PageSize).ToListAsync();
         }
         public async Task<User?> GetByIdAsync(int id)
         {
