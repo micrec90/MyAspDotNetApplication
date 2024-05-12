@@ -30,14 +30,20 @@ namespace MyRESTfulWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserGetDTO>>> GetUsers()
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var users = await _userRepository.GetAllAsync();
             return users.Select(x => x.ToUserGetDTO()).ToList();
         }
 
         // GET: api/Users/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<UserGetDTO>> GetUser(int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
@@ -50,9 +56,12 @@ namespace MyRESTfulWebAPI.Controllers
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> PutUser(int id, UserPutDTO userPutDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var user = await _userRepository.PutAsync(id, userPutDTO);
 
             if(user == null)
@@ -73,6 +82,9 @@ namespace MyRESTfulWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(UserPostDTO userPostDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var user = userPostDTO.ToUserFromPostDTO();
             await _userRepository.PostAsync(user);
 
@@ -80,9 +92,12 @@ namespace MyRESTfulWebAPI.Controllers
         }
 
         // DELETE: api/Users/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var user = await _userRepository.DeleteAsync(id);
             if (user == null)
             {

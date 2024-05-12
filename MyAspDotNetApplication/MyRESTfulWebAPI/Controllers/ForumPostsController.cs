@@ -33,14 +33,20 @@ namespace MyRESTfulWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ForumPostGetDTO>>> GetForumPosts()
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var forumPosts = await _forumPostsRepository.GetAllAsync();
             return forumPosts.Select(x => x.ToForumPostGetDTO()).ToList();
         }
 
         // GET: api/ForumPosts/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<ForumPostGetDTO>> GetForumPost(int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var forumPost = await _forumPostsRepository.GetByIdAsync(id);
 
             if (forumPost == null)
@@ -53,9 +59,12 @@ namespace MyRESTfulWebAPI.Controllers
 
         // PUT: api/ForumPosts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> PutForumPost(int id, ForumPostPutDTO forumPostPutDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var forumPost = await _forumPostsRepository.PutAsync(id, forumPostPutDTO);
 
             if (forumPost == null)
@@ -76,6 +85,9 @@ namespace MyRESTfulWebAPI.Controllers
         [HttpPost("{userId}")]
         public async Task<ActionResult<ForumPost>> PostForumPost(int userId, ForumPostPostDTO forumPostDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (!await _userRepository.UserExists(userId))
             {
                 return BadRequest();
@@ -88,9 +100,12 @@ namespace MyRESTfulWebAPI.Controllers
         }
 
         // DELETE: api/ForumPosts/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteForumPost(int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var forumPost = await _forumPostsRepository.DeleteAsync(id);
             if (forumPost == null)
             {
