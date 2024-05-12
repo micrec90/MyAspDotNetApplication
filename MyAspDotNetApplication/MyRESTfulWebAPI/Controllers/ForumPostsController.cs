@@ -10,6 +10,7 @@ using MyRESTfulWebAPI.DTOs.ForumPostDTOs;
 using MyRESTfulWebAPI.Interfaces;
 using MyRESTfulWebAPI.Mappers;
 using MyRESTfulWebAPI.Models;
+using MyRESTfulWebAPI.Queries;
 using MyRESTfulWebAPI.Repositories;
 
 namespace MyRESTfulWebAPI.Controllers
@@ -31,12 +32,12 @@ namespace MyRESTfulWebAPI.Controllers
 
         // GET: api/ForumPosts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ForumPostGetDTO>>> GetForumPosts()
+        public async Task<ActionResult<IEnumerable<ForumPostGetDTO>>> GetForumPosts([FromQuery] ForumPostQuery queryObject)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var forumPosts = await _forumPostsRepository.GetAllAsync();
+            var forumPosts = await _forumPostsRepository.GetAllAsync(queryObject);
             return forumPosts.Select(x => x.ToForumPostGetDTO()).ToList();
         }
 

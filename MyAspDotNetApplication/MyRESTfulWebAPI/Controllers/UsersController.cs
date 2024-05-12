@@ -10,6 +10,7 @@ using MyRESTfulWebAPI.DTOs.UserDTOs;
 using MyRESTfulWebAPI.Interfaces;
 using MyRESTfulWebAPI.Mappers;
 using MyRESTfulWebAPI.Models;
+using MyRESTfulWebAPI.Queries;
 
 namespace MyRESTfulWebAPI.Controllers
 {
@@ -28,12 +29,12 @@ namespace MyRESTfulWebAPI.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserGetDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserGetDTO>>> GetUsers([FromQuery] UserQueryObject queryObject)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var users = await _userRepository.GetAllAsync();
+            var users = await _userRepository.GetAllAsync(queryObject);
             return users.Select(x => x.ToUserGetDTO()).ToList();
         }
 

@@ -4,6 +4,7 @@ using MyRESTfulWebAPI.DTOs.ForumPostDTOs;
 using MyRESTfulWebAPI.DTOs.UserDTOs;
 using MyRESTfulWebAPI.Interfaces;
 using MyRESTfulWebAPI.Models;
+using MyRESTfulWebAPI.Queries;
 
 namespace MyRESTfulWebAPI.Repositories
 {
@@ -28,9 +29,23 @@ namespace MyRESTfulWebAPI.Repositories
             return forumPost;
         }
 
-        public async Task<List<ForumPost>> GetAllAsync()
+        public async Task<List<ForumPost>> GetAllAsync(ForumPostQuery queryObject)
         {
-            return await _context.ForumPosts.ToListAsync();
+            var forumPosts = _context.ForumPosts.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(queryObject.Title))
+            {
+                forumPosts = forumPosts.Where(f => f.Title.Contains(queryObject.Title));
+            }
+            if (!string.IsNullOrWhiteSpace(queryObject.Content))
+            {
+                forumPosts = forumPosts.Where(f => f.Content.Contains(queryObject.Content));
+            }
+            if (!string.IsNullOrWhiteSpace(queryObject.User))
+            {
+                forumPosts = forumPosts.Where(f => f.User != null && f.User.Username.Contains(queryObject.User));
+            }
+
+            return await forumPosts.ToListAsync();
         }
 
         public async Task<ForumPost?> GetByIdAsync(int id)
