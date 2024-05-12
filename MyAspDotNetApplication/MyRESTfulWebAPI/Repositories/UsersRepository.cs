@@ -27,6 +27,17 @@ namespace MyRESTfulWebAPI.Repositories
             {
                 users = users.Where(u => u.Email.Contains(queryObject.Email));
             }
+            if (!string.IsNullOrWhiteSpace(queryObject.SortBy))
+            {
+                if (queryObject.SortBy.Equals("UserName", StringComparison.OrdinalIgnoreCase))
+                {
+                    users = queryObject.IsDescending ? users.OrderByDescending(x => x.Username) : users.OrderBy(x => x.Username);
+                }
+                if (queryObject.SortBy.Equals("Email", StringComparison.OrdinalIgnoreCase))
+                {
+                    users = queryObject.IsDescending ? users.OrderByDescending(x => x.Email) : users.OrderBy(x => x.Email);
+                }
+            }
 
             return await users.ToListAsync();
         }

@@ -45,6 +45,22 @@ namespace MyRESTfulWebAPI.Repositories
                 forumPosts = forumPosts.Where(f => f.User != null && f.User.Username.Contains(queryObject.User));
             }
 
+            if(!string.IsNullOrWhiteSpace(queryObject.SortBy))
+            {
+                if(queryObject.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
+                {
+                    forumPosts = queryObject.IsDescending ? forumPosts.OrderByDescending(x => x.Title) : forumPosts.OrderBy(x => x.Title);
+                }
+                if (queryObject.SortBy.Equals("Content", StringComparison.OrdinalIgnoreCase))
+                {
+                    forumPosts = queryObject.IsDescending ? forumPosts.OrderByDescending(x => x.Content) : forumPosts.OrderBy(x => x.Content);
+                }
+                if (queryObject.SortBy.Equals("User", StringComparison.OrdinalIgnoreCase))
+                {
+                    forumPosts = queryObject.IsDescending ? forumPosts.OrderByDescending(x => x.User) : forumPosts.OrderBy(x => x.User);
+                }
+            }
+
             return await forumPosts.ToListAsync();
         }
 
